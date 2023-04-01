@@ -8,15 +8,20 @@ import { OwonConnectLibrary } from './OwonConnectLibrary';
 export class OwonCommandLibrary {
   private owonConnect: OwonConnectLibrary;
 
-  constructor(path: string, config?: SerialPortOpenOptions<AutoDetectTypes>) {
+  public constructor(
+    path: string,
+    config?: SerialPortOpenOptions<AutoDetectTypes>,
+  ) {
     this.owonConnect = new OwonConnectLibrary(path, config);
   }
 
-  async init(): Promise<void> {
-    await this.owonConnect.open();
-    await this.reset();
-    await this.setRemote();
-    await this.setOutputOff();
+  public static async build(
+    path: string,
+    config?: SerialPortOpenOptions<AutoDetectTypes>,
+  ): Promise<OwonCommandLibrary> {
+    const owonCommandLibrary = new OwonCommandLibrary(path, config);
+    await owonCommandLibrary.init();
+    return owonCommandLibrary;
   }
 
   public async close(): Promise<void> {
@@ -24,15 +29,6 @@ export class OwonCommandLibrary {
     await this.setRemote();
     await this.setOutputOff();
     await this.owonConnect.close();
-  }
-
-  async build(
-    path: string,
-    config?: SerialPortOpenOptions<AutoDetectTypes>,
-  ): Promise<OwonCommandLibrary> {
-    const owonCommandLibrary = new OwonCommandLibrary(path, config);
-    await owonCommandLibrary.init();
-    return owonCommandLibrary;
   }
 
   public async reset(): Promise<void> {
@@ -127,5 +123,12 @@ export class OwonCommandLibrary {
 
   public async measurePower(): Promise<string> {
     return await this.owonConnect.readCommand(EnumSCPICommands.MEASURE_POWER);
+  }
+
+  private async init(): Promise<void> {
+    await this.owonConnect.open();
+    await this.reset();
+    await this.setRemote();
+    await this.setOutputOff();
   }
 }
