@@ -4,21 +4,18 @@ import { SerialPortOpenOptions } from 'serialport/dist/serialport';
 
 export const OwonLibraryDefaultConfig: SerialPortOpenOptions<AutoDetectTypes> =
   {
-    path: '/dev/cu.usbserial-410',
+    path: '/dev/cu.usbserial-5410',
     baudRate: 115200,
     dataBits: 8,
     parity: 'none',
   };
 
-let port: SerialPort<AutoDetectTypes>;
-let parser: ReadlineParser;
-
 export class OwonConnectLibrary {
-  private config: SerialPortOpenOptions<AutoDetectTypes>;
   // @ts-ignore: Needed for future
-  private port: SerialPort<AutoDetectTypes>;
+  public port: SerialPort<AutoDetectTypes>;
   // @ts-ignore: Needed for future
-  private parser: ReadlineParser;
+  public parser: ReadlineParser;
+  public config: SerialPortOpenOptions<AutoDetectTypes>;
 
   constructor(path: string, config?: SerialPortOpenOptions<AutoDetectTypes>) {
     if (!path) throw new Error('Port is required');
@@ -28,28 +25,28 @@ export class OwonConnectLibrary {
       ...(config ?? {}),
       ...{ path },
     };
-    this.port = new SerialPort(this.config);
-    this.parser = port.pipe(new ReadlineParser());
-
-    parser.on('error', function (err) {
-      console.log('Error: ', err.message);
-    });
+    console.log(this.config);
   }
 
-  async open(): Promise<void> {
+  public async open(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.port = new SerialPort(this.config, err => {
-        if (err) return reject(err);
+      this.port = new SerialPort(this.config, function (err) {
+        if (err) {
+          console.error('Error: ', err.message);
+          reject(err);
+        }
       });
-      this.parser = port.pipe(new ReadlineParser());
-      parser.on('error', function (err) {
+
+      this.parser = this.port.pipe(new ReadlineParser());
+
+      this.parser.on('error', function (err) {
         console.log('Error: ', err.message);
       });
 
-      port.on('open', async error => {
-        if (error) {
-          console.error('Error opening serial port:', error);
-          reject(error);
+      this.port.on('open', async err => {
+        if (err) {
+          console.error('Error opening serial port:', err);
+          reject(err);
         } else {
           console.log(
             `Serial port ${this.config.path} opened at ${this.config.baudRate} baud`,
@@ -59,23 +56,11 @@ export class OwonConnectLibrary {
       });
     });
   }
-  public async readCommand(command: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      console.log(`readCommand ${command}`);
-      port.write(`${command}\n`, err => {
-        if (err) return reject(err);
-        parser.once('data', data => {
-          console.log(parser.listeners('data'));
-          resolve(data);
-        });
-      });
-    });
-  }
 
-  async writeCommand(command: string): Promise<void> {
+  public async writeCommand(command: string): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log(`writeCommand ${command}`);
-      port.write(`${command}\n`, err => {
+      this.port.write(`${command}\n`, err => {
         if (err) return reject(err);
         setTimeout(() => {
           return resolve();
@@ -83,9 +68,28 @@ export class OwonConnectLibrary {
       });
     });
   }
-  async close() {
-    await port.close(function (err) {
-      console.log('port closed', err);
+
+  public async readCommand(command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      console.log(`readCommand ${command}`);
+      this.port.write(`${command}\n`, err => {
+        if (err) {
+          console.error(err);
+          return reject(err);
+        }
+        this.parser.once('data', data => {
+          resolve(data);
+        });
+      });
+    });
+  }
+
+  public async close() {
+    this.port.close(function (err) {
+      if (err) {
+        return console.error('Error: ', err.message);
+      }
+      console.log('port closed');
     });
   }
 }
