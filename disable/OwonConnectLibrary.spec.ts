@@ -1,8 +1,8 @@
 import test from 'ava';
 
-import { EnumSCPICommands } from '../enums';
+import { EnumSCPICommands } from '../src/enums';
 
-import { OwonConnectLibrary } from './OwonConnectLibrary';
+import { OwonConnectLibrary } from '../src/libraries/OwonConnectLibrary';
 
 const port = '/dev/cu.usbserial-5410';
 
