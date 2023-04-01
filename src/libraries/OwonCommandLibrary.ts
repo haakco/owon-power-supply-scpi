@@ -132,7 +132,7 @@ export class OwonCommandLibrary {
     return this.owonConLib.readCommand(EnumSCPICommands.MEASURE_POWER);
   }
 
-  private async init(): Promise<void> {
+  public async init(): Promise<void> {
     await this.owonConLib.open();
     await this.reset();
     await this.setRemote();

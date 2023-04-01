@@ -28,5 +28,5 @@ export declare class OwonCommandLibrary {
   measureAll(): Promise<string>;
   measureAllInfo(): Promise<string>;
   measurePower(): Promise<string>;
-  private init;
+  init(): Promise<void>;
 }
