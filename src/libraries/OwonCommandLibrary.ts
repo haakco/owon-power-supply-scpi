@@ -10,26 +10,26 @@ import {
 
 export class OwonCommandLibrary {
   private owonConLib: OwonConnectLibrary;
+  private config: SerialPortOpenOptions<AutoDetectTypes>;
 
   public constructor(
     path: string,
     config?: SerialPortOpenOptions<AutoDetectTypes>,
   ) {
-    this.owonConLib = new OwonConnectLibrary(path, config);
+    this.config = config ?? OwonLibraryDefaultConfig;
+    this.owonConLib = new OwonConnectLibrary(path, this.config);
   }
 
   public static async build(
     path: string,
     config?: SerialPortOpenOptions<AutoDetectTypes>,
   ): Promise<OwonCommandLibrary> {
-    const mainConfig = config ?? OwonLibraryDefaultConfig;
-    const owonCommandLibrary = new OwonCommandLibrary(path, mainConfig);
+    const owonCommandLibrary = new OwonCommandLibrary(path, config);
     await owonCommandLibrary.init();
     return owonCommandLibrary;
   }
 
   public async close(): Promise<void> {
-    await this.reset();
     await this.setRemote();
     await this.setOutputOff();
     return this.owonConLib.close();
@@ -68,10 +68,6 @@ export class OwonCommandLibrary {
     return this.owonConLib.readCommand(EnumSCPICommands.GET_ID);
   }
 
-  public async measureVoltage(): Promise<string> {
-    return this.owonConLib.readCommand(EnumSCPICommands.MEASURE_VOLTAGE);
-  }
-
   public async setVoltage(voltage: number): Promise<void> {
     await this.owonConLib.writeCommand(
       `${EnumSCPICommands.SET_VOLTAGE} ${voltage}`,
@@ -94,20 +90,20 @@ export class OwonCommandLibrary {
     return this.owonConLib.readCommand(EnumSCPICommands.GET_VOLTAGE_LIMIT);
   }
 
-  public async measureCurrent(): Promise<string> {
-    return this.owonConLib.readCommand(EnumSCPICommands.MEASURE_CURRENT);
+  public async measureVoltage(): Promise<string> {
+    return this.owonConLib.readCommand(EnumSCPICommands.MEASURE_VOLTAGE);
   }
 
-  public async setCurrent(voltage: number): Promise<void> {
+  public async setCurrent(current: number): Promise<void> {
     await this.owonConLib.writeCommand(
-      `${EnumSCPICommands.SET_CURRENT} ${voltage}`,
+      `${EnumSCPICommands.SET_CURRENT} ${current}`,
     );
     return;
   }
 
-  public async setCurrentLimit(voltage: number): Promise<void> {
+  public async setCurrentLimit(current: number): Promise<void> {
     await this.owonConLib.writeCommand(
-      `${EnumSCPICommands.SET_CURRENT_LIMIT} ${voltage}`,
+      `${EnumSCPICommands.SET_CURRENT_LIMIT} ${current}`,
     );
     return;
   }
@@ -118,6 +114,10 @@ export class OwonCommandLibrary {
 
   public async getCurrentLimit(): Promise<string> {
     return this.owonConLib.readCommand(EnumSCPICommands.GET_CURRENT_LIMIT);
+  }
+
+  public async measureCurrent(): Promise<string> {
+    return this.owonConLib.readCommand(EnumSCPICommands.MEASURE_CURRENT);
   }
 
   public async measureAll(): Promise<string> {
@@ -134,9 +134,9 @@ export class OwonCommandLibrary {
 
   public async init(): Promise<void> {
     await this.owonConLib.open();
-    await this.reset();
     await this.setRemote();
     await this.setOutputOff();
+    await this.setLocal();
     return;
   }
 }

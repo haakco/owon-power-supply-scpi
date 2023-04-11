@@ -78,7 +78,7 @@ export class OwonConnectLibrary {
           return reject(err);
         }
         this.parser.once('data', data => {
-          resolve(data);
+          resolve(data.trim());
         });
       });
     });
