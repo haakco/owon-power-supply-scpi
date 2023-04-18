@@ -25,7 +25,6 @@ export class OwonConnectLibrary {
       ...(config ?? {}),
       ...{ path },
     };
-    console.log(this.config);
   }
 
   public async open(): Promise<void> {
