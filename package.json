@@ -16,12 +16,14 @@
     "power supply"
   ],
   "dependencies": {
+    "pino": "^8.11.0",
     "serialport": "^10.5.0"
   },
   "scripts": {
     "build": "rm -rf ./lib && run-p build:* && npm run fix",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
+    "lint": "run-s fix",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write && prettier \"lib/**/*.{ts,js}\" --write ",
     "fix:lint": "eslint src --ext .ts --fix",

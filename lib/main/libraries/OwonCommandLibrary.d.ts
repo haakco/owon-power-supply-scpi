@@ -2,7 +2,7 @@ import { AutoDetectTypes } from '@serialport/bindings-cpp';
 import { SerialPortOpenOptions } from 'serialport/dist/serialport';
 export declare class OwonCommandLibrary {
   private owonConLib;
-  private config;
+  private readonly config;
   constructor(path: string, config?: SerialPortOpenOptions<AutoDetectTypes>);
   static build(
     path: string,

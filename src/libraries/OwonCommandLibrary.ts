@@ -10,7 +10,7 @@ import {
 
 export class OwonCommandLibrary {
   private owonConLib: OwonConnectLibrary;
-  private config: SerialPortOpenOptions<AutoDetectTypes>;
+  private readonly config: SerialPortOpenOptions<AutoDetectTypes>;
 
   public constructor(
     path: string,
