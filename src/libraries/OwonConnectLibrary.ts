@@ -49,8 +49,8 @@ export class OwonConnectLibrary {
           logger.error('Error opening serial port:', err);
           reject(err);
         } else {
-          logger.info(
-            `Serial port ${this.config.path} opened at ${this.config.baudRate} baud`,
+          logger.debug(
+            `Owon serial port ${this.config.path} opened at ${this.config.baudRate} baud`,
           );
           return resolve(void 0);
         }
@@ -60,7 +60,7 @@ export class OwonConnectLibrary {
 
   public async writeCommand(command: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      logger.info(`writeCommand ${command}`);
+      logger.debug(`writeCommand ${command}`);
       this.port.write(`${command}\n`, err => {
         if (err) {
           logger.error(err);
@@ -75,7 +75,7 @@ export class OwonConnectLibrary {
 
   public async readCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      logger.info(`readCommand ${command}`);
+      logger.debug(`readCommand ${command}`);
       this.port.write(`${command}\n`, err => {
         if (err) {
           logger.error(err);
@@ -93,7 +93,7 @@ export class OwonConnectLibrary {
       if (err) {
         return logger.error('Error: ', err.message);
       }
-      logger.info('port closed');
+      logger.debug('owon port closed');
     });
   }
 }
