@@ -43,7 +43,7 @@
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --out lib/docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --json lib/docs/typedoc.json",
     "prepare": "husky install",
-    "pub": "npm run build && npm version patch --force && git push && gh release create \"$(npm run get:version --silent)\" --generate-notes && npm publish",
+    "pub": "npm run build && npm version patch --force && git push && git push --tags && gh release create \"$(npm run get:version --silent)\" --generate-notes && npm publish",
     "get:version": "node -p \"process.env.npm_package_version\""
   },
   "devDependencies": {
