@@ -1,9 +1,2 @@
-export declare const logger: import('pino').Logger<{
-  level: string;
-  formatters: {
-    level: (label: string) => {
-      severity: string;
-    };
-  };
-  timestamp: () => string;
-}>;
+import { type LoggerOptions } from 'pino';
+export declare const logger: import('pino').Logger<LoggerOptions>;

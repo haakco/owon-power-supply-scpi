@@ -1,6 +1,6 @@
-import Pino from 'pino';
+import Pino, { type LoggerOptions } from 'pino';
 
-export const logger = Pino({
+const pinoConfig: LoggerOptions = {
   level: process.env.PINO_LOG_LEVEL || 'info',
   formatters: {
     level: (label: string) => {
@@ -8,7 +8,17 @@ export const logger = Pino({
     },
   },
   timestamp: Pino.stdTimeFunctions.isoTime,
-});
+};
+
+if (process.env.PINO_LOG_LEVEL === 'debug') {
+  pinoConfig.transport = {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+    },
+  };
+}
+export const logger = Pino(pinoConfig);
 
 process.on('uncaughtException', err => {
   // log the exception
